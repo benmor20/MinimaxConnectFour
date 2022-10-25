@@ -20,8 +20,8 @@ def main():
         view.print_board()
         p2.move()
 
-        if board.player_won() == 1:
-            print('Player 1 Won!')
+        if board.player_won() == 2:
+            print('Player 2 Won!')
             break
 
 
