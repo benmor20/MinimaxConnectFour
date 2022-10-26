@@ -68,3 +68,19 @@ class PlayerController(Controller):
 
             # If got this far, made a valid move, can exit
             return
+
+
+class DummyController(Controller):
+    """
+    A Controller for testing purposes, which plays the leftmost available move.
+    """
+    def move(self):
+        """
+        Performs the leftmost available move.
+        """
+        for col in range(7):
+            self._board.place_token(col)
+
+            # If exactly one of this is True, the move went through
+            if self._board.is_red ^ self.red:
+                return
