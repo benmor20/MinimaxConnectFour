@@ -9,15 +9,16 @@ WIN_KERNELS = [np.eye(4, dtype=int),
 
 class ConnectFour:
     """
-    Player starts off red, models board plays and wins
+    Player starts off red. Models board plays and wins.
 
 
-    get_board_state: passes matrix which has 1s for red, -1s for blue, 0 
+    get_board_state:
+    passes matrix which has 1s for red, -1s for blue, 0 
     otherwise. Board is int datatypes
 
     place_token:
-    Places the current color token (hopefully) properly on the board
-    and swtitches turn if it can in the given column.
+    If the column has space, places the current color token (hopefully)
+    properly on the board and switches turn.
 
 
     """
@@ -51,7 +52,7 @@ class ConnectFour:
     def check_win(self):
         # Checks if current color has won
         for kernel in WIN_KERNELS:
-            convolution = signal.convolve2d(self.board,kernel)
+            convolution = signal.convolve2d(self.board,kernel, mode="valid")
             if (4*self.is_red + -4*self.is_red) in convolution:
                 return True
 
