@@ -18,7 +18,8 @@ class ConnectFour:
 
     place_token():
         If the column has space, places the current color token (hopefully)
-    properly on the board and switches turn.
+    properly on the board and switches turn. Returns true if successful, false
+    if illegal move.
 
     check_win():
         Returns 1 if red won, -1 if blue won, and 0 if nobody won
@@ -47,11 +48,11 @@ class ConnectFour:
             self.board[top_pos, column] = -1*(not self.is_red) + self.is_red
             self.is_red = not self.is_red
             self.turn_count += 1
-
+            return True
         else:
             #Illegal move
             print("Illegal Move")
-            pass
+            return False
             
     def check_win(self):
         # Checks if either color has won
