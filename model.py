@@ -11,13 +11,13 @@ class ConnectFour:
     """
     Player starts off red. Models board plays and wins.
 
-
-    get_board_state:
-    passes matrix which has 1s for red, -1s for blue, 0 
+    Methods:
+    get_board_state{}:
+        passes matrix which has 1s for red, -1s for blue, 0 
     otherwise. Board is int datatypes
 
-    place_token:
-    If the column has space, places the current color token (hopefully)
+    place_token():
+        If the column has space, places the current color token (hopefully)
     properly on the board and switches turn.
 
     check_win():
