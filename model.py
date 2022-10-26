@@ -4,8 +4,8 @@ from scipy import signal
 
 WIN_KERNELS = [np.eye(4, dtype=int),
                np.flip(np.eye(4, dtype=int),1),
-               np.ones((4,1) dtype=int),
-               np.ones((1,4) dtype=int)]
+               np.ones((4,1), dtype=int),
+               np.ones((1,4), dtype=int)]
 
 class ConnectFour:
     """
@@ -41,7 +41,7 @@ class ConnectFour:
         row_spaces = self.board[column]==0
         if 1 in row_spaces:
             top_pos = np.where(row_spaces)[-1]
-            self.board[column, top_pos] = -1*not self.is_red + self.is_red
+            self.board[column, top_pos] = -1*(not self.is_red) + self.is_red
             self.is_red = not self.is_red
             self.turn_count += 1
 
@@ -53,7 +53,7 @@ class ConnectFour:
         # Checks if current color has won
         for kernel in WIN_KERNELS:
             convolution = signal.convolve2d(self.board,kernel, mode="valid")
-            if (4*self.is_red + -4*self.is_red) in convolution:
+            if (4*self.is_red + -4*(not self.is_red)) in convolution:
                 return True
 
         return False
