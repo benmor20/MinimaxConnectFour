@@ -20,6 +20,9 @@ class ConnectFour:
     If the column has space, places the current color token (hopefully)
     properly on the board and switches turn.
 
+    check_win():
+        Returns 1 if red won, -1 if blue won, and 0 if nobody won
+
 
     """
     def __init__(self):
@@ -35,25 +38,28 @@ class ConnectFour:
         return self.is_red
     
     def get_turn_count(self):
-        return self.get_turn_count
+        return self.turn_count
 
     def place_token(self, column):
-        row_spaces = self.board[column]==0
+        row_spaces = self.board[:,column]==0
         if 1 in row_spaces:
-            top_pos = np.where(row_spaces)[-1]
-            self.board[column, top_pos] = -1*(not self.is_red) + self.is_red
+            top_pos = np.where(row_spaces)[0][-1]
+            self.board[top_pos, column] = -1*(not self.is_red) + self.is_red
             self.is_red = not self.is_red
             self.turn_count += 1
 
         else:
             #Illegal move
+            print("Illegal Move")
             pass
             
     def check_win(self):
-        # Checks if current color has won
+        # Checks if either color has won
+        # Question: what datatype should this be?
         for kernel in WIN_KERNELS:
             convolution = signal.convolve2d(self.board,kernel, mode="valid")
-            if (4*self.is_red + -4*(not self.is_red)) in convolution:
-                return True
-
-        return False
+            if 4 in convolution:
+                return 1
+            else if -4 in convolution:
+                return -1
+        return 0
