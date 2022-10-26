@@ -6,21 +6,22 @@ from controller import PlayerController
 def main():
     board = ConnectFour()
     view = ConnectFourView(board)
-    p1 = PlayerController(board, 1)
-    p2 = PlayerController(board, 2)
+    p1 = PlayerController(board, True)
+    p2 = PlayerController(board, False)
 
+    view.print_board()
     while True:
-        view.print_board()
         p1.move()
+        view.print_board()
 
-        if board.player_won() == 1:
+        if board.check_win():
             print('Player 1 Won!')
             break
 
-        view.print_board()
         p2.move()
+        view.print_board()
 
-        if board.player_won() == 2:
+        if board.check_win():
             print('Player 2 Won!')
             break
 
