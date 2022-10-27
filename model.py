@@ -13,8 +13,8 @@ class ConnectFour:
 
     Methods:
     get_board_state{}:
-        passes matrix which has 1s for red, -1s for blue, 0 
-    otherwise. Board is int datatypes
+        Passes integer array which has 1s for red, -1s for blue, 0 
+    otherwise. 
 
     place_token():
         If the column has space, places the current color token (hopefully)
@@ -23,8 +23,6 @@ class ConnectFour:
 
     check_win():
         Returns 1 if red won, -1 if blue won, and 0 if nobody won
-
-
     """
     def __init__(self):
         self.board = np.zeros((5,7), dtype=int)
