@@ -49,7 +49,7 @@ class ConnectFour:
             return True
         else:
             #Illegal move
-            print("Illegal Move")
+            # print("Illegal Move")
             return False
 
     def create_child(self,column):
