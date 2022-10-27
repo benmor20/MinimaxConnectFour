@@ -59,6 +59,6 @@ class ConnectFour:
             convolution = signal.convolve2d(self.board,kernel, mode="valid")
             if 4 in convolution:
                 return 1
-            else if -4 in convolution:
+            elif -4 in convolution:
                 return -1
         return 0

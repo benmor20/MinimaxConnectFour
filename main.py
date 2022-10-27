@@ -14,14 +14,14 @@ def main():
         p1.move()
         view.print_board()
 
-        if board.check_win():
+        if board.check_win() == 1:
             print('Player 1 Won!')
             break
 
         p2.move()
         view.print_board()
 
-        if board.check_win():
+        if board.check_win() == -1:
             print('Player 2 Won!')
             break
 
