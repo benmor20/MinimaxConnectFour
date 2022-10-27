@@ -1,9 +1,9 @@
 """
-Module to contain the view for the Connect Four game.
+Module to contain the view for Connect Four game.
 """
 
-import numpy as np
-from scipy import signal
+from abc import ABC, abstractmethod
+from model import ConnectFour
 
 class View(ABC):
     """
@@ -35,17 +35,11 @@ class View(ABC):
         Draw the gameboard Connect4 instance.
         """
 
-class PlayerView(View):
+class ConnectFourView(View):
     """
-    A viewer for Connect4
+    An ASCII viewer for Connect4
 
     Attributes:
-        _successful_packages: a VisualText which shows the number of packages
-                              that Tower instances have handled.
-        _lives: a VisualText which shows the number of lives the player has
-                left.
-        _available_towers: a VisualText which shows the number of Tower
-                           instances available to be placed.
     """
 
     def __init__(self, gameboard):
@@ -56,8 +50,6 @@ class PlayerView(View):
             gameboard: a Factory instance.
         """
         super().__init__(gameboard)
-        self._win_condition = 
-        self._board = 
 
     def win(self): 
         """
@@ -69,7 +61,23 @@ class PlayerView(View):
         """
         Updates the view to include ASCII board & win condition.
         """
+        # Draw initial line
+        self.draw_line()
+        for row in self._gameboard.board:
+            for value in row:
+                if value == -1:
+                    print(f'X|', end='')
+                elif value == 0:
+                    print(' |', end='')
+                else:
+                    print(f'O|', end='')
+            self.draw_line()
+        
+    def draw_line(self,last=False):
+        print("\n+", end='')
+        for i in range(self._gameboard.board.shape[1]):
+            print("-+", end='')
+        if last != True: 
+            print("\n|", end='')
 
-        print(f"+-+")
-        for i in range(0,self._gameboard.board.shape)
         

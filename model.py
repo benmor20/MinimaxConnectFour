@@ -51,6 +51,20 @@ class ConnectFour:
             #Illegal move
             print("Illegal Move")
             return False
+
+    def create_child(self,column):
+        """
+        Create a new model
+        """
+        child = ConnectFour()
+        child.board = self.board.copy()
+        child.is_red = self.is_red
+        child.turn_count = self.turn_count
+        # Catch illegal moves
+        if child.place_token(column):
+            return child
+        return None
+
             
     def check_win(self):
         # Checks if either color has won

@@ -3,8 +3,9 @@ Module to contain all the controllers for the Connect Four game.
 """
 
 from abc import ABC, abstractmethod
-from model import ConnectFour
-
+from model import ConnectFour, WIN_KERNELS
+from scipy import signal
+import numpy as np
 
 class Controller(ABC):
     """
@@ -54,7 +55,7 @@ class PlayerController(Controller):
                 continue
 
             # Ensure given int is in bounds
-            if move < 1 or move > self._board.board.shape[0]:
+            if move < 1 or move > self._board.board.shape[1]:
                 print('Please enter a number between 1 and 7')
                 continue
 
@@ -75,6 +76,72 @@ class DummyController(Controller):
         """
         Performs the leftmost available move.
         """
-        for col in range(self._board.board.shape[0]):
+        for col in range(self._board.board.shape[1]):
             if self._board.place_token(col):
                 return
+
+class MinimaxController(Controller):
+    """
+    A minimax controller.
+    """
+    def __init__(self, board: ConnectFour, red: bool, depth: int=4):
+        """
+        Initializes an instance of a controller
+
+        :param board: the ConnectFour board this controller operates
+        :param red: a boolean, True if P1, False if P2
+        :param depth: an int that describes the maximum look depth
+        """
+        super().__init__(board, red)
+        self.depth = depth
+
+    def move(self):
+        """
+        Performs a move using minimax
+        """
+        self._board.place_token(self.minimax(self.depth, self._board, self.red)[1])
+        
+    def minimax(self, depth, gamestate, maximize):
+        """
+        depth: an int that describes the maximum look depth
+
+        gamestate: an instance of ConnectFour
+
+        maximize: a bool representing the maximizing (True) or minimizing (False) player. 
+        """
+        if depth == 0 or gamestate.check_win() != 0:
+            return self.static_eval(gamestate), 0
+        children = [gamestate.create_child(i) for i in range(7)]
+        best = 0, -1
+        if maximize:
+            # such readable much wow
+            # TODO: Investigate draw states
+            for i, child in enumerate(children):
+                if child is not None:
+                    score = self.minimax(depth - 1, child, not maximize)[0]
+                    if score > best[0] or best[1] == -1:
+                        best = score, i
+        else:
+            for i, child in enumerate(children):
+                if child is not None:
+                    score = self.minimax(depth - 1, child, not maximize)[0]
+                    if score < best[0] or best[1] == -1:
+                        best = score, i
+        return best
+
+    def static_eval(self, gamestate):
+        """
+        gamestate: an instance of ConnectFour
+        """
+        total = 0
+        for kernel in WIN_KERNELS:
+            convolution = signal.convolve2d(gamestate.board,kernel, mode="valid")
+            total += np.sum(convolution==4) * 100000000
+            total += np.sum(convolution==3) * 1
+            total += np.sum(convolution==-4) * -100000000
+            total += np.sum(convolution==-3) * -1
+        return total
+
+
+
+

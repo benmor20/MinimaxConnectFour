@@ -1,25 +1,25 @@
 from model import ConnectFour
 from view import ConnectFourView
-from controller import PlayerController
+from controller import PlayerController, MinimaxController
 
 
 def main():
     board = ConnectFour()
     view = ConnectFourView(board)
     p1 = PlayerController(board, True)
-    p2 = PlayerController(board, False)
+    p2 = MinimaxController(board, False)
 
-    view.print_board()
+    view.draw()
     while True:
         p1.move()
-        view.print_board()
+        view.draw()
 
         if board.check_win() == 1:
             print('Player 1 Won!')
             break
 
         p2.move()
-        view.print_board()
+        view.draw()
 
         if board.check_win() == -1:
             print('Player 2 Won!')
