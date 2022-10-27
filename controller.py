@@ -54,15 +54,12 @@ class PlayerController(Controller):
                 continue
 
             # Ensure given int is in bounds
-            if move < 1 or move > 7:
+            if move < 1 or move > self._board.board.shape[0]:
                 print('Please enter a number between 1 and 7')
                 continue
 
-            # Attempt to play move
-            self._board.place_token(move - 1)  # Offset for 0-indexing
-
-            # If still this player's turn, move is invalid
-            if self._board.is_red == self.red:
+            # Make the move, if invalid try again
+            if not self._board.place_token(move - 1):
                 print('Invalid move')
                 continue
 
@@ -78,9 +75,6 @@ class DummyController(Controller):
         """
         Performs the leftmost available move.
         """
-        for col in range(7):
-            self._board.place_token(col)
-
-            # If exactly one of this is True, the move went through
-            if self._board.is_red ^ self.red:
+        for col in range(self._board.board.shape[0]):
+            if self._board.place_token(col):
                 return
