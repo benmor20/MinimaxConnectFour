@@ -5,25 +5,26 @@ Module to contain the view for Connect Four game.
 from abc import ABC, abstractmethod
 from model import ConnectFour
 
+
 class View(ABC):
     """
-    View Discrete Group Deep Dive
+    An ABC to represent a View of the game
 
     Attrbitues:
         _gameboard: the active Connect4 instance.
     """
 
-    def __init__(self, gameboard):
+    def __init__(self, gameboard: ConnectFour):
         """
-        Initialize gameboard.
+        Initialize the view.
 
         Args:
-            gameboard: a Connect4 instance.
+            gameboard: a ConnectFour instance to draw
         """
         self._gameboard = gameboard
     
     @property
-    def gameboard(self):
+    def gameboard(self) -> ConnectFour:
         """
         Return the Connect4 instance being represented by this view.
         """
@@ -34,36 +35,21 @@ class View(ABC):
         """
         Draw the gameboard Connect4 instance.
         """
-
-class ConnectFourView(View):
-    """
-    An ASCII viewer for Connect4
-
-    Attributes:
-    """
-
-    def __init__(self, gameboard):
-        """
-        Initialize PyGameView
-
-        Args:
-            gameboard: a Factory instance.
-        """
-        super().__init__(gameboard)
-
-    def win(self): 
-        """
-        Returns the win condition
-        """
         pass
 
+
+class TextView(View):
+    """
+    An ASCII viewer for Connect4
+    """
     def draw(self):
         """
-        Updates the view to include ASCII board & win condition.
+        Draws the current state of the board to the console
         """
-        # Draw initial line
-        self.draw_line()
         for row in self._gameboard.board:
+            # Draw separation line
+            self.draw_line()
+            # Draw each square in the row
             for value in row:
                 if value == -1:
                     print(f'X|', end='')
@@ -71,13 +57,28 @@ class ConnectFourView(View):
                     print(' |', end='')
                 else:
                     print(f'O|', end='')
-            self.draw_line()
+        # Draw bottom line
+        self.draw_line(True)
+
+        # If someone won, print out their win
+        winner = self.gameboard.check_win()
+        if winner == 1:
+            print('Player 1 won!')
+        elif winner == -1:
+            print('Player 2 won!')
         
-    def draw_line(self,last=False):
+    def draw_line(self, last=False):
+        """
+        Draws a separation line
+
+        :param last: a bool, whether this is the last separation line
+        """
         print("\n+", end='')
         for i in range(self._gameboard.board.shape[1]):
             print("-+", end='')
-        if last != True: 
+        if last:
+            print()
+        else:
             print("\n|", end='')
 
         

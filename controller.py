@@ -4,7 +4,8 @@ Module to contain all the controllers for the Connect Four game.
 
 from abc import ABC, abstractmethod
 from model import ConnectFour
-from minimax import minimax
+from minimax import minimax, minimaxab
+
 
 class Controller(ABC):
     """
@@ -79,15 +80,19 @@ class DummyController(Controller):
             if self._board.place_token(col):
                 return
 
+
 class MinimaxController(Controller):
     """
     A minimax controller.
+
+    Attributes:
+        depth: an int, how many moves ahead the minimax algorithm should look
     """
-    def __init__(self, board: ConnectFour, red: bool, depth: int=4):
+    def __init__(self, board: ConnectFour, red: bool, depth: int = 4):
         """
         Initializes an instance of a controller
 
-        :param board: the ConnectFour board this controller operates
+        :param board: the ConnectFour board this controller operates on
         :param red: a boolean, True if P1, False if P2
         :param depth: an int that describes the maximum look depth
         """
@@ -100,8 +105,31 @@ class MinimaxController(Controller):
         """
         self._board.place_token(minimax(self.depth, self._board, self.red)[1])
 
+
 class MinimaxABController(MinimaxController):
+    """
+    A minimax controller that uses alpha-beta pruning
+
+    Attributes:
+        alpha: an int, the alpha parameter for AB pruning
+        beta: an int, the beta parameter for AB pruning
+    """
+    def __init__(self, board: ConnectFour, red: bool, depth: int = 4, alpha: int = 1000000000, beta: int = 1000000000):
+        """
+        Initialize an instance of this controller
+
+        :param board: the ConnectFour board this controller operates on
+        :param red: a bool, whether this controller controls the red player
+        :param depth: an int, the number moves ahead minimax should look
+        :param alpha: an int, the alpha parameter for AB pruning
+        :param beta: an int, the beta parameter for AB pruning
+        """
+        super().__init__(board, red, depth)
+        self.alpha = alpha
+        self.beta = beta
+
     def move(self):
         """
+        Performs a move using minimax with alpha-beta pruning
         """
-        self._board.place_token(minimax(self.depth, self._board,-100000000000, 10000000000,  self.red)[1])
+        self._board.place_token(minimaxab(self.depth, self._board, self.alpha, self.beta, self.red)[1])

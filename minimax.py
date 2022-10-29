@@ -17,24 +17,60 @@ def minimax(depth: int, gamestate: ConnectFour, maximize: bool) -> Tuple[int, in
     :param maximize: a bool representing the maximizing (True) or minimizing (False) player.
     :return: A tuple of ints containing first the score then the column to get that score.
     """
+    return _minimax(depth, gamestate, None, maximize)
+
+
+def minimaxab(depth: int, gamestate: ConnectFour, alpha: int, beta: int, maximize: bool) -> Tuple[int, int]:
+    """
+    Performs the minimax algorithm on a given gamestate, with Alpha-Beta pruning
+
+    :param depth: an int that describes the maximum look depth
+    :param gamestate: an instance of ConnectFour
+    :param alpha: the Alpha parameter for AB pruning
+    :param beta: the Beta parameter for AB pruning
+    :param maximize: a bool representing the maximizing (True) or minimizing (False) player.
+    :return: A tuple of ints containing first the score then the column to get that score.
+    """
+    return _minimax(depth, gamestate, (alpha, beta), maximize)
+
+
+def _minimax(depth: int, gamestate: ConnectFour, ab: Optional[Tuple[int, int]], maximize: bool) -> Tuple[int, int]:
+    """
+    Performs the minimax algorithm on a given gamestate, with Alpha-Beta pruning
+
+    :param depth: an int that describes the maximum look depth
+    :param gamestate: an instance of ConnectFour
+    :param ab: a tuple containing the alpha and beta parameters for AB pruning, or None to perform regular minimax
+    :param maximize: a bool representing the maximizing (True) or minimizing (False) player.
+    :return: A tuple of ints containing first the score then the column to get that score.
+    """
+    # Base case - reached minimum depth or someone has won
     if depth == 0 or gamestate.check_win() != 0:
         return static_eval(gamestate), 0
+
+    # Generate all possible next moves
     children = [gamestate.create_child(i) for i in range(7)]
     best = 0, -1
-    if maximize:
-        # such readable much wow
-        # TODO: Investigate draw states
-        for i, child in enumerate(children):
-            if child is not None:
-                score = minimax(depth - 1, child, not maximize)[0]
-                if score > best[0] or best[1] == -1:
-                    best = score, i
-    else:
-        for i, child in enumerate(children):
-            if child is not None:
-                score = minimax(depth - 1, child, not maximize)[0]
-                if score < best[0] or best[1] == -1:
-                    best = score, i
+
+    # For each child, perform minimax
+    for i, child in enumerate(children):
+        if child is not None:
+            score = minimax(depth - 1, child, not maximize)[0]
+            # If the score is less or we are trying to maximize (but not both) then found new good score
+            # Or if best[1] is -1, then this is our first run and we need to set it
+            if (score < best[0] ^ maximize) or best[1] == -1:
+                best = score, i
+
+            # Alpha-Beta pruning
+            if ab is not None:
+                alpha, beta = ab
+                if maximize:
+                    alpha = max(alpha, best[0])
+                else:
+                    beta = min(beta, best[0])
+                ab = alpha, beta
+                if beta < alpha:
+                    break
     return best
 
 
@@ -53,40 +89,3 @@ def static_eval(gamestate: ConnectFour) -> int:
         total += np.sum(convolution == -4) * -100000000
         total += np.sum(convolution == -3) * -1
     return total
-
-
-
-
-def minimaxAB(depth: int, gamestate: ConnectFour, alpha:int, beta:int, maximize: bool) -> Tuple[int, int]:
-    """
-    depth: an int that describes the maximum look depth
-
-    gamestate: an instance of ConnectFour
-
-    maximize: a bool representing the maximizing (True) or minimizing (False) player. 
-    """
-    if depth == 0 or gamestate.check_win() != 0:
-        return static_eval(gamestate), 0
-    children = [gamestate.create_child(i) for i in range(7)]
-    best = 0, -1
-    if maximize:
-        # such readable much wow
-        # TODO: Investigate draw states
-        for i, child in enumerate(children):
-            if child is not None:
-                score = minimaxAB(depth - 1, child, not maximize)[0]
-                if score > best[0] or best[1] == -1:
-                    best = score, i
-                alpha = max(alpha, best[0])
-                if beta <= alpha:
-                    break
-    else:
-        for i, child in enumerate(children):
-            if child is not None:
-                score = minimaxAB(depth - 1, child, not maximize)[0]
-                if score < best[0] or best[1] == -1:
-                    best = score, i
-                beta = min(beta, best[0])
-                if beta <= alpha:
-                    break
-    return best
