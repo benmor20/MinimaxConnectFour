@@ -99,3 +99,9 @@ class MinimaxController(Controller):
         Performs a move using minimax
         """
         self._board.place_token(minimax(self.depth, self._board, self.red)[1])
+
+class MinimaxABController(MinimaxController):
+    def move(self):
+        """
+        """
+        self._board.place_token(minimax(self.depth, self._board,-100000000000, 10000000000,  self.red)[1])

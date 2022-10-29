@@ -55,44 +55,38 @@ def static_eval(gamestate: ConnectFour) -> int:
     return total
 
 
-class MinimaxABController(MinimaxController):
-    def move(self):
-        """
-        Performs a move using minimax
-        """
-        self._board.place_token(self.minimax(self.depth, self._board, \
-        -99999999999, 9999999999, self.red)[1])
 
-    def minimaxAB(self, depth, gamestate, alpha, beta, maximize):
-        """
-        depth: an int that describes the maximum look depth
 
-        gamestate: an instance of ConnectFour
+def minimaxAB(depth: int, gamestate: ConnectFour, alpha:int, beta:int, maximize: bool) -> Tuple[int, int]:
+    """
+    depth: an int that describes the maximum look depth
 
-        maximize: a bool representing the maximizing (True) or minimizing (False) player. 
-        """
-        if depth == 0 or gamestate.check_win() != 0:
-            return self.static_eval(gamestate), 0
-        children = [gamestate.create_child(i) for i in range(7)]
-        best = 0, -1
-        if maximize:
-            # such readable much wow
-            # TODO: Investigate draw states
-            for i, child in enumerate(children):
-                if child is not None:
-                    score = self.minimaxAB(depth - 1, child, not maximize)[0]
-                    if score > best[0] or best[1] == -1:
-                        best = score, i
-                    alpha = max(alpha, best[0])
-                    if beta <= alpha:
-                        break
-        else:
-            for i, child in enumerate(children):
-                if child is not None:
-                    score = self.minimaxAB(depth - 1, child, not maximize)[0]
-                    if score < best[0] or best[1] == -1:
-                        best = score, i
-                    beta = min(beta, best[0])
-                    if beta <= alpha:
-                        break
-        return best
+    gamestate: an instance of ConnectFour
+
+    maximize: a bool representing the maximizing (True) or minimizing (False) player. 
+    """
+    if depth == 0 or gamestate.check_win() != 0:
+        return static_eval(gamestate), 0
+    children = [gamestate.create_child(i) for i in range(7)]
+    best = 0, -1
+    if maximize:
+        # such readable much wow
+        # TODO: Investigate draw states
+        for i, child in enumerate(children):
+            if child is not None:
+                score = minimaxAB(depth - 1, child, not maximize)[0]
+                if score > best[0] or best[1] == -1:
+                    best = score, i
+                alpha = max(alpha, best[0])
+                if beta <= alpha:
+                    break
+    else:
+        for i, child in enumerate(children):
+            if child is not None:
+                score = minimaxAB(depth - 1, child, not maximize)[0]
+                if score < best[0] or best[1] == -1:
+                    best = score, i
+                beta = min(beta, best[0])
+                if beta <= alpha:
+                    break
+    return best
