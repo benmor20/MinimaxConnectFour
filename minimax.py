@@ -83,7 +83,7 @@ class Tree:
         return self.children[item]
 
 
-def minimax(depth: int, gamestate: ConnectFour, maximize: bool, make_tree: bool = False) -> int:
+def minimax(depth: int, gamestate: ConnectFour, maximize: bool, make_tree: bool = False) -> Tuple[int, int]:
     """
     Performs the minimax algorithm on the current gamestate
 
@@ -94,14 +94,14 @@ def minimax(depth: int, gamestate: ConnectFour, maximize: bool, make_tree: bool 
     :return: The optimal column to play according to minimax
     """
     tree = Tree(gamestate) if make_tree else None
-    column = _minimax(depth, gamestate, None, maximize, tree)[1]
+    _, column, calls = _minimax(depth, gamestate, None, maximize, tree)
     if make_tree:
         tree.display()
-    return column
+    return column, calls
 
 
 def minimaxab(depth: int, gamestate: ConnectFour, alpha: int, beta: int, maximize: bool, make_tree: bool = False)\
-        -> int:
+        -> Tuple[int, int]:
     """
     Performs the minimax algorithm on a given gamestate, with Alpha-Beta pruning
 
@@ -114,14 +114,14 @@ def minimaxab(depth: int, gamestate: ConnectFour, alpha: int, beta: int, maximiz
     :return: The optimal column to play according to minimax with AB pruning
     """
     tree = Tree(gamestate) if make_tree else None
-    column = _minimax(depth, gamestate, (alpha, beta), maximize, tree)[1]
+    _, column, calls = _minimax(depth, gamestate, (alpha, beta), maximize, tree)
     if make_tree:
         tree.display()
-    return column
+    return column, calls
 
 
 def _minimax(depth: int, gamestate: ConnectFour, ab: Optional[Tuple[int, int]], maximize: bool, tree: Optional[Tree])\
-        -> Tuple[int, int]:
+        -> Tuple[int, int, int]:
     """
     Performs the minimax algorithm on a given gamestate, with Alpha-Beta pruning
 
@@ -130,25 +130,27 @@ def _minimax(depth: int, gamestate: ConnectFour, ab: Optional[Tuple[int, int]], 
     :param ab: a tuple containing the alpha and beta parameters for AB pruning, or None to perform regular minimax
     :param maximize: a bool representing the maximizing (True) or minimizing (False) player.
     :param tree: the Tree of the given gamestate, or None to not create a Tree
-    :return: A tuple of ints containing first the score then the column to get that score.
+    :return: A tuple of ints containing the score, the column to get that score, and the number of calls.
     """
     # Base case - reached minimum depth or someone has won
     if depth == 0 or gamestate.check_win() != 0:
         score = static_eval(gamestate)
         if tree is not None:
             tree.score = score
-        return score, -1
+        return score, -1, 1
 
     # Generate all possible next moves
     children = [gamestate.create_child(i) for i in range(7)]
     best = 0, -1
 
     # For each child, perform minimax
+    total_calls = 0
     for i, child in enumerate(children):
         if child is not None:
             if tree is not None:
                 tree[i] = Tree(child)
-            score = _minimax(depth - 1, child, ab, not maximize, None if tree is None else tree[i])[0]
+            score, _, calls = _minimax(depth - 1, child, ab, not maximize, None if tree is None else tree[i])
+            total_calls += calls
             # If the score is less or we are trying to maximize (but not both) then found new good score
             # Or if best[1] is -1, then this is our first run and we need to set it
             if ((score < best[0]) ^ maximize) or best[1] == -1:
@@ -166,7 +168,14 @@ def _minimax(depth: int, gamestate: ConnectFour, ab: Optional[Tuple[int, int]], 
                     break
     if tree is not None:
         tree.score = best[0]
-    return best
+    return best[0], best[1], total_calls
+
+
+# The kernels used to detect potential three-in-a-row
+TRIPLE_KERNELS = [np.eye(3, dtype=int),
+                  np.flip(np.eye(3, dtype=int), 1),
+                  np.ones((3, 1), dtype=int),
+                  np.ones((1, 3), dtype=int)]
 
 
 def static_eval(gamestate: ConnectFour) -> int:
@@ -178,9 +187,13 @@ def static_eval(gamestate: ConnectFour) -> int:
     """
     total = 0
     for kernel in WIN_KERNELS:
-        convolution = signal.convolve2d(gamestate.board, kernel, mode="valid")
-        total += np.sum(convolution == 4) * 100000000
-        total += np.sum(convolution == 3) * 1
-        total += np.sum(convolution == -4) * -100000000
-        total += np.sum(convolution == -3) * -1
+        convolution = signal.convolve2d(gamestate.board, kernel, mode='valid')
+        total += np.sum(convolution == 4) * 100000000000
+        total += np.sum(convolution == 3) * 10
+        total += np.sum(convolution == -4) * -100000000000
+        total += np.sum(convolution == -3) * -10
+    for kernel in TRIPLE_KERNELS:
+        convolution = signal.convolve2d(gamestate.board, kernel, mode='valid')
+        total += np.sum(convolution == 2) * 1
+        total += np.sum(convolution == -2) * -1
     return total

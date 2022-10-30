@@ -87,8 +87,9 @@ class MinimaxController(Controller):
 
     Attributes:
         depth: an int, how many moves ahead the minimax algorithm should look
+        total_calls: an int, the total number of calls
     """
-    def __init__(self, board: ConnectFour, red: bool, depth: int = 4):
+    def __init__(self, board: ConnectFour, red: bool, depth: int = 6):
         """
         Initializes an instance of a controller
 
@@ -98,12 +99,15 @@ class MinimaxController(Controller):
         """
         super().__init__(board, red)
         self.depth = depth
+        self.total_calls = 0
 
     def move(self):
         """
         Performs a move using minimax
         """
-        self._board.place_token(minimax(self.depth, self._board, self.red))
+        col, calls = minimax(self.depth, self._board, self.red)
+        self.total_calls += calls
+        self._board.place_token(col)
 
 
 class MinimaxABController(MinimaxController):
@@ -114,7 +118,7 @@ class MinimaxABController(MinimaxController):
         alpha: an int, the alpha parameter for AB pruning
         beta: an int, the beta parameter for AB pruning
     """
-    def __init__(self, board: ConnectFour, red: bool, depth: int = 4, alpha: int = 1000000000, beta: int = 1000000000):
+    def __init__(self, board: ConnectFour, red: bool, depth: int = 6, alpha: int = -10000, beta: int = 10000):
         """
         Initialize an instance of this controller
 
@@ -132,4 +136,6 @@ class MinimaxABController(MinimaxController):
         """
         Performs a move using minimax with alpha-beta pruning
         """
-        self._board.place_token(minimaxab(self.depth, self._board, self.alpha, self.beta, self.red))
+        col, calls = minimaxab(self.depth, self._board, self.alpha, self.beta, self.red)
+        self.total_calls += calls
+        self._board.place_token(col)

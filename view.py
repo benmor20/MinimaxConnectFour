@@ -80,5 +80,4 @@ class TextView(View):
             print()
         else:
             print("\n|", end='')
-
         

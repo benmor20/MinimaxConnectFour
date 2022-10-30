@@ -9,9 +9,9 @@ from typing import *
 
 # The kernels used in convolution to identify wins
 WIN_KERNELS = [np.eye(4, dtype=int),
-               np.flip(np.eye(4, dtype=int),1),
-               np.ones((4,1), dtype=int),
-               np.ones((1,4), dtype=int)]
+               np.flip(np.eye(4, dtype=int), 1),
+               np.ones((4, 1), dtype=int),
+               np.ones((1, 4), dtype=int)]
 
 
 class ConnectFour:
@@ -77,6 +77,17 @@ class ConnectFour:
         # Illegal move - no empty spaces in the column
         return False
 
+    def copy(self) -> 'ConnectFour':
+        """
+        Create a copy of this game state
+        :return: A copy of this ConnectFour state
+        """
+        copy = ConnectFour()
+        copy.board = self.board.copy()
+        copy.is_red = self.is_red
+        copy.turn_count = self.turn_count
+        return copy
+
     def create_child(self, column: int) -> Optional['ConnectFour']:
         """
         Create a new model with an extra token placed in the given column.
@@ -85,12 +96,8 @@ class ConnectFour:
         :return: a copy of this game with the performed move, or None if the move is not possible
         :raise: ValueError if the given column is out of bounds
         """
-
         # Copy the current state
-        child = ConnectFour()
-        child.board = self.board.copy()
-        child.is_red = self.is_red
-        child.turn_count = self.turn_count
+        child = self.copy()
 
         # If we can place a token in the column, return the child
         if child.place_token(column):
@@ -112,3 +119,25 @@ class ConnectFour:
             elif -4 in convolution:
                 return -1
         return 0
+
+    def __hash__(self) -> int:
+        """
+        :return: an int, the hash for this board state
+        """
+        total = 0
+        for col in range(self.board.shape[1]):
+            col_total = 0
+            for row in range(self.board.shape[0]):
+                if self.board[row, col] == 0:
+                    continue
+                col_total *= 2
+                col_total += 0 if self.board[row, col] == 1 else 1
+            total *= 2 ** 7 - 1
+            total += col_total
+        return total
+
+    def __int__(self) -> int:
+        """
+        :return: an integer representation of this board, equivalent to __hash__
+        """
+        return hash(self)
