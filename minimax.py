@@ -8,19 +8,19 @@ import numpy as np
 from typing import *
 
 
-def minimax(depth: int, gamestate: ConnectFour, maximize: bool) -> Tuple[int, int]:
+def minimax(depth: int, gamestate: ConnectFour, maximize: bool) -> int:
     """
     Performs the minimax algorithm on the current gamestate
 
     :param depth: an int that describes the maximum look depth
     :param gamestate: an instance of ConnectFour
     :param maximize: a bool representing the maximizing (True) or minimizing (False) player.
-    :return: A tuple of ints containing first the score then the column to get that score.
+    :return: The optimal column to play according to minimax
     """
-    return _minimax(depth, gamestate, None, maximize)
+    return _minimax(depth, gamestate, None, maximize)[1]
 
 
-def minimaxab(depth: int, gamestate: ConnectFour, alpha: int, beta: int, maximize: bool) -> Tuple[int, int]:
+def minimaxab(depth: int, gamestate: ConnectFour, alpha: int, beta: int, maximize: bool) -> int:
     """
     Performs the minimax algorithm on a given gamestate, with Alpha-Beta pruning
 
@@ -29,9 +29,9 @@ def minimaxab(depth: int, gamestate: ConnectFour, alpha: int, beta: int, maximiz
     :param alpha: the Alpha parameter for AB pruning
     :param beta: the Beta parameter for AB pruning
     :param maximize: a bool representing the maximizing (True) or minimizing (False) player.
-    :return: A tuple of ints containing first the score then the column to get that score.
+    :return: The optimal column to play according to minimax with AB pruning
     """
-    return _minimax(depth, gamestate, (alpha, beta), maximize)
+    return _minimax(depth, gamestate, (alpha, beta), maximize)[1]
 
 
 def _minimax(depth: int, gamestate: ConnectFour, ab: Optional[Tuple[int, int]], maximize: bool) -> Tuple[int, int]:
@@ -55,7 +55,7 @@ def _minimax(depth: int, gamestate: ConnectFour, ab: Optional[Tuple[int, int]], 
     # For each child, perform minimax
     for i, child in enumerate(children):
         if child is not None:
-            score = minimax(depth - 1, child, not maximize)[0]
+            score = _minimax(depth - 1, child, ab, not maximize)[0]
             # If the score is less or we are trying to maximize (but not both) then found new good score
             # Or if best[1] is -1, then this is our first run and we need to set it
             if (score < best[0] ^ maximize) or best[1] == -1:

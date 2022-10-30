@@ -103,7 +103,7 @@ class MinimaxController(Controller):
         """
         Performs a move using minimax
         """
-        self._board.place_token(minimax(self.depth, self._board, self.red)[1])
+        self._board.place_token(minimax(self.depth, self._board, self.red))
 
 
 class MinimaxABController(MinimaxController):
@@ -132,4 +132,4 @@ class MinimaxABController(MinimaxController):
         """
         Performs a move using minimax with alpha-beta pruning
         """
-        self._board.place_token(minimaxab(self.depth, self._board, self.alpha, self.beta, self.red)[1])
+        self._board.place_token(minimaxab(self.depth, self._board, self.alpha, self.beta, self.red))
