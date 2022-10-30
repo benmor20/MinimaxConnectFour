@@ -61,7 +61,7 @@ class Tree:
         Displays this tree
         """
         graph = self.make_graph()
-        nx.draw(graph)
+        nx.draw(graph, labels={n: n.score if abs(n.score) < 1e9 else ('-∞' if n.score < 0 else '∞') for n in graph})
         plt.show()
 
     def __setitem__(self, key: int, value: 'Tree'):
@@ -151,7 +151,7 @@ def _minimax(depth: int, gamestate: ConnectFour, ab: Optional[Tuple[int, int]], 
             score = _minimax(depth - 1, child, ab, not maximize, None if tree is None else tree[i])[0]
             # If the score is less or we are trying to maximize (but not both) then found new good score
             # Or if best[1] is -1, then this is our first run and we need to set it
-            if (score < best[0] ^ maximize) or best[1] == -1:
+            if ((score < best[0]) ^ maximize) or best[1] == -1:
                 best = score, i
 
             # Alpha-Beta pruning
