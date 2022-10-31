@@ -24,7 +24,8 @@ def main():
     """
     # Get results
     folder = '\\'.join(__file__.split('\\')[:-1])
-    with open('\\'.join((folder, 'game_results.json')), 'r') as file:
+    print(__file__)
+    with open('game_results.json', 'r') as file:
         results = json.load(file)
 
     # Pull the data
