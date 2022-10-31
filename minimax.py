@@ -100,21 +100,19 @@ def minimax(depth: int, gamestate: ConnectFour, maximize: bool, make_tree: bool 
     return column, calls
 
 
-def minimaxab(depth: int, gamestate: ConnectFour, alpha: int, beta: int, maximize: bool, make_tree: bool = False)\
+def minimaxab(depth: int, gamestate: ConnectFour, maximize: bool, make_tree: bool = False)\
         -> Tuple[int, int]:
     """
     Performs the minimax algorithm on a given gamestate, with Alpha-Beta pruning
 
     :param depth: an int that describes the maximum look depth
     :param gamestate: an instance of ConnectFour
-    :param alpha: the Alpha parameter for AB pruning
-    :param beta: the Beta parameter for AB pruning
     :param maximize: a bool representing the maximizing (True) or minimizing (False) player.
     :param make_tree: a bool, whether to create and display the minimax Tree
     :return: The optimal column to play according to minimax with AB pruning
     """
     tree = Tree(gamestate) if make_tree else None
-    _, column, calls = _minimax(depth, gamestate, (alpha, beta), maximize, tree)
+    _, column, calls = _minimax(depth, gamestate, (int(-1e12), int(1e12)), maximize, tree)
     if make_tree:
         tree.display()
     return column, calls

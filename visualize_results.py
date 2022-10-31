@@ -39,6 +39,8 @@ def main():
 
     # See if AB pruning changed the outcomes
     print(get_data(results, 'regular_board') == get_data(results, 'ab_board'))
+    print(get_data(results, 'regular_winner'))
+    print(get_data(results, 'ab_winner'))
 
     # Plot linear scale
     plt.plot(depths, reg_scaled)
@@ -70,6 +72,7 @@ def main():
     plt.xticks(depths)
     plt.xlabel('Depth (turns)')
     plt.ylabel('Percentage of Calls against Plain Minimax')
+    plt.ylim([0, 105])
     plt.title('Alpha-Beta Pruning Improvement')
     plt.show()
 

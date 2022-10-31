@@ -14,7 +14,7 @@ def main():
     with open(filepath, 'r') as file:
         results = json.load(file)
 
-    for d in range(7, 8):
+    for d in range(1, 8):
         results[d] = {}
         print(f'Running regular game with a depth of {d}')
 

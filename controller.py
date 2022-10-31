@@ -113,29 +113,12 @@ class MinimaxController(Controller):
 class MinimaxABController(MinimaxController):
     """
     A minimax controller that uses alpha-beta pruning
-
-    Attributes:
-        alpha: an int, the alpha parameter for AB pruning
-        beta: an int, the beta parameter for AB pruning
     """
-    def __init__(self, board: ConnectFour, red: bool, depth: int = 6, alpha: int = -10000, beta: int = 10000):
-        """
-        Initialize an instance of this controller
-
-        :param board: the ConnectFour board this controller operates on
-        :param red: a bool, whether this controller controls the red player
-        :param depth: an int, the number moves ahead minimax should look
-        :param alpha: an int, the alpha parameter for AB pruning
-        :param beta: an int, the beta parameter for AB pruning
-        """
-        super().__init__(board, red, depth)
-        self.alpha = alpha
-        self.beta = beta
 
     def move(self):
         """
         Performs a move using minimax with alpha-beta pruning
         """
-        col, calls = minimaxab(self.depth, self._board, self.alpha, self.beta, self.red)
+        col, calls = minimaxab(self.depth, self._board, self.red)
         self.total_calls += calls
         self._board.place_token(col)
