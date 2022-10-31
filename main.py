@@ -19,8 +19,9 @@ def main():
     p1 = MinimaxABController(board, True)
     p2 = MinimaxABController(board, False)
 
+    # Run game, maximum of 42 turns
     view.draw()
-    while True:
+    while board.turn_count < 42:
         # P1 Move
         p1.move()
         view.draw()
@@ -31,9 +32,6 @@ def main():
         p2.move()
         view.draw()
         if board.check_win() == -1:
-            break
-
-        if board.turn_count == 42:
             break
 
     print(f'P1 had {p1.total_calls} calls, P2 has {p2.total_calls} calls')
